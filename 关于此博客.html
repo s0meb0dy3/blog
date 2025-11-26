@@ -8,10 +8,15 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
+            color: #333;
+        }
+        .post-container {
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
         }
         h1, h2, h3 { margin-top: 2rem; margin-bottom: 1rem; }
         pre {
@@ -53,11 +58,12 @@
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-home">← 返回首页</a>
-    <article>
-        <h1>关于此博客</h1>
-        <time class="post-date">2025-09-27</time>
-        <p>欢迎来到我的博客！这是使用自己搭建的极简静态博客生成器发布的第一篇文章。</p>
+    <div class="post-container">
+        <a href="index.html" class="back-home">← 返回首页</a>
+        <article>
+            <h1>关于此博客</h1>
+            <time class="post-date">2025-09-27</time>
+            <p>欢迎来到我的博客！这是使用自己搭建的极简静态博客生成器发布的第一篇文章。</p>
 <h2>建站想法</h2>
 <p>创建这个博客是希望做一些属于自己的东西。看过hexo,hugo等框架，想来想去还是希望自定义的程度高一点，以后也能添加一些有趣的功能。我很喜欢一切可以自己修改，自己掌控的感觉，从0到1一点点添加功能，同时保持简洁与优雅，是我理想的博客实现。
 同时我也希望做这个博客可以让我养成写作的习惯，记录生活或者学习的点点滴滴。</p>
@@ -103,6 +109,7 @@
 </ol>
 <p>感谢您的关注，期待在这个简陋但实用的博客空间中与您分享更多内容！</p>
 
-    </article>
+        </article>
+    </div>
 </body>
 </html>
