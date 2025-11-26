@@ -1,6 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 
+// Author and blog information
+const authorInfo = {
+  name: 'Yi\'s Blog',
+  bio: '做热爱的事情~',
+  avatar: 'assets/images/Gemini_Generated_Image_4uivll4uivll4uiv.png',
+  links: [
+    { name: 'GitHub', url: 'https://github.com/s0meb0dy3' },
+  ]
+};
+
 function extractMetadata(markdownContent) {
     const metadata = {};
     const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
@@ -70,10 +80,15 @@ function generatePostHTML(title, content, date) {
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
+            color: #333;
+        }
+        .post-container {
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
         }
         h1, h2, h3 { margin-top: 2rem; margin-bottom: 1rem; }
         pre {
@@ -115,12 +130,14 @@ function generatePostHTML(title, content, date) {
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-home">← 返回首页</a>
-    <article>
-        <h1>${title}</h1>
-        ${date ? `<time class="post-date">${date}</time>` : ''}
-        ${content}
-    </article>
+    <div class="post-container">
+        <a href="index.html" class="back-home">← 返回首页</a>
+        <article>
+            <h1>${title}</h1>
+            ${date ? `<time class="post-date">${date}</time>` : ''}
+            ${content}
+        </article>
+    </div>
 </body>
 </html>`;
 }
@@ -152,12 +169,78 @@ function generateIndex(posts) {
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
+            margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
             color: #333;
         }
-        h1 { margin-bottom: 2rem; }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        h1, h2, h3 { margin-top: 0; margin-bottom: 1rem; }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Layout */
+        .main-layout {
+            display: flex;
+            gap: 4rem;
+        }
+        .sidebar {
+            flex: 0 0 240px;
+        }
+        .posts-list {
+            flex: 1;
+            min-width: 0; /* Prevents overflow in flex items */
+        }
+
+        /* Sidebar */
+        .profile {
+            text-align: left;
+        }
+        .profile .avatar-wrapper {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .profile .avatar {
+            width: 150px;  /* Make image larger than container */
+            height: 150px; /* This will show more of the image */
+            margin-left: 0px; /* Center the larger image */
+            margin-top: 0px;
+            object-fit: cover;
+            object-position: 30% 60%;
+        }
+        .profile .author-name {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        .profile .author-bio {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        .profile-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+        .profile-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Posts List */
         .post-item {
             margin-bottom: 2rem;
             padding-bottom: 2rem;
@@ -173,22 +256,49 @@ function generateIndex(posts) {
             color: #666;
             font-size: 0.9rem;
         }
-        a {
-            color: #0066cc;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .main-layout {
+                flex-direction: column;
+                gap: 3rem;
+            }
+            .sidebar {
+                flex: 0 0 auto;
+                width: 100%;
+                text-align: center;
+            }
+            .profile-links ul {
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>我的博客</h1>
-    </header>
-    <main>
-        ${postsList}
-    </main>
+    <div class="container">
+        <div class="main-layout">
+            <aside class="sidebar">
+                <div class="profile">
+                    <div class="avatar-wrapper">
+                        <img src="${authorInfo.avatar}" alt="Author Avatar" class="avatar">
+                    </div>
+                    <h2 class="author-name">${authorInfo.name}</h2>
+                    <p class="author-bio">${authorInfo.bio}</p>
+                    <div class="profile-links">
+                        <ul>
+                            ${authorInfo.links.map(link => `<li><a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.name}</a></li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+            <main class="posts-list">
+                <header>
+                    <h1>博客文章</h1>
+                </header>
+                ${postsList}
+            </main>
+        </div>
+    </div>
 </body>
 </html>`;
 
