@@ -1,7 +1,7 @@
 # 极简静态博客生成器
 
 一个简单、快速的静态博客生成器，基于 Node.js 和 Markdown。专注于内容创作，无需复杂配置。
-
+博客地址：https://s0meb0dy3.github.io/blog/
 ## 功能特点
 
 - ✅ Markdown 解析和 HTML 生成
@@ -24,7 +24,6 @@
 ```
 
 ## 快速开始
-
 ### 1. 安装依赖
 ```bash
 npm install
