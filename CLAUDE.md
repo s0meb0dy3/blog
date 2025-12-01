@@ -11,7 +11,6 @@ This is a minimal static blog generator built with Node.js. It converts Markdown
 - `npm install` - Install dependencies (only dependency is markdown-it)
 - `npm run build` - Build the blog, generates HTML files from Markdown posts
 - `npm run serve` - Start development server on port 8000
-- `npm test` - No tests implemented (placeholder only)
 
 ## Architecture
 

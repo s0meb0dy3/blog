@@ -11,6 +11,23 @@ const authorInfo = {
   ]
 };
 
+// Category definitions
+const CATEGORIES = {
+  tech: { name: '技术', color: '#0066cc' },
+  investment: { name: '投资', color: '#ff6b6b' },
+  essay: { name: '随笔', color: '#51cf66' }
+};
+
+const DEFAULT_CATEGORY = 'essay';
+
+function getCategoryName(categoryKey) {
+  return CATEGORIES[categoryKey]?.name || CATEGORIES[DEFAULT_CATEGORY].name;
+}
+
+function getCategoryColor(categoryKey) {
+  return CATEGORIES[categoryKey]?.color || CATEGORIES[DEFAULT_CATEGORY].color;
+}
+
 function extractMetadata(markdownContent) {
     const metadata = {};
     const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
@@ -52,13 +69,15 @@ function processAllPosts() {
             const markdownContent = fs.readFileSync(inputPath, 'utf8');
             const { metadata, content } = extractMetadata(markdownContent);
             const htmlContent = parseMarkdownContent(content);
-            const htmlPage = generatePostHTML(metadata.title || file.replace('.md', ''), htmlContent, metadata.date);
+            const category = metadata.category || DEFAULT_CATEGORY;
+            const htmlPage = generatePostHTML(metadata.title || file.replace('.md', ''), htmlContent, metadata.date, category);
 
             fs.writeFileSync(outputPath, htmlPage);
             posts.push({
                 title: metadata.title || file.replace('.md', ''),
                 date: metadata.date || new Date().toISOString().split('T')[0],
-                url: file.replace('.md', '.html')
+                url: file.replace('.md', '.html'),
+                category: category
             });
 
             console.log(`Generated: ${outputPath}`);
@@ -69,7 +88,7 @@ function processAllPosts() {
     copyAssets();
 }
 
-function generatePostHTML(title, content, date) {
+function generatePostHTML(title, content, date, category = DEFAULT_CATEGORY) {
     return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -113,10 +132,23 @@ function generatePostHTML(title, content, date) {
             padding-left: 1rem;
             color: #666;
         }
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
         .post-date {
             color: #666;
             font-size: 0.9rem;
-            margin-bottom: 2rem;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 500;
         }
         .back-home {
             display: inline-block;
@@ -134,7 +166,10 @@ function generatePostHTML(title, content, date) {
         <a href="index.html" class="back-home">← 返回首页</a>
         <article>
             <h1>${title}</h1>
-            ${date ? `<time class="post-date">${date}</time>` : ''}
+            <div class="post-meta">
+                <span class="category-badge" style="background-color: ${getCategoryColor(category)}">${getCategoryName(category)}</span>
+                ${date ? `<time class="post-date">${date}</time>` : ''}
+            </div>
             ${content}
         </article>
     </div>
@@ -152,8 +187,11 @@ function generateIndex(posts) {
     posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const postsList = posts.map(post => `
-        <article class="post-item">
-            <h3><a href="${encodeURIComponent(post.url)}">${post.title}</a></h3>
+        <article class="post-item" data-category="${post.category}">
+            <div class="post-header">
+                <h3><a href="${encodeURIComponent(post.url)}">${post.title}</a></h3>
+                <span class="category-badge" style="background-color: ${getCategoryColor(post.category)}">${getCategoryName(post.category)}</span>
+            </div>
             <time class="post-date">${post.date}</time>
         </article>
     `).join('');
@@ -240,6 +278,55 @@ function generateIndex(posts) {
             margin-bottom: 0.5rem;
         }
 
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .category-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            color: #333;
+        }
+        .category-btn:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        .category-btn.active {
+            background-color: #0066cc;
+            color: #fff;
+            border-color: #0066cc;
+        }
+
+        /* Category Badge */
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-header h3 {
+            margin: 0;
+            flex: 1;
+        }
+
         /* Posts List */
         .post-item {
             margin-bottom: 2rem;
@@ -248,9 +335,6 @@ function generateIndex(posts) {
         }
         .post-item:last-child {
             border-bottom: none;
-        }
-        .post-item h3 {
-            margin-bottom: 0.5rem;
         }
         .post-date {
             color: #666;
@@ -270,6 +354,19 @@ function generateIndex(posts) {
             }
             .profile-links ul {
                 text-align: center;
+            }
+        }
+        @media (max-width: 600px) {
+            .category-filter {
+                gap: 0.5rem;
+            }
+            .category-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+            .post-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -295,10 +392,36 @@ function generateIndex(posts) {
                 <header>
                     <h1>博客文章</h1>
                 </header>
+                <div class="category-filter">
+                    <button class="category-btn active" data-category="all">全部</button>
+                    <button class="category-btn" data-category="tech">技术</button>
+                    <button class="category-btn" data-category="investment">投资</button>
+                    <button class="category-btn" data-category="essay">随笔</button>
+                </div>
                 ${postsList}
             </main>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const selectedCategory = this.dataset.category;
+
+                // Update active button
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter posts
+                document.querySelectorAll('.post-item').forEach(post => {
+                    if (selectedCategory === 'all' || post.dataset.category === selectedCategory) {
+                        post.style.display = 'block';
+                    } else {
+                        post.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>`;
 
