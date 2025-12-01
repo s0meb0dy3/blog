@@ -41,10 +41,23 @@
             padding-left: 1rem;
             color: #666;
         }
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
         .post-date {
             color: #666;
             font-size: 0.9rem;
-            margin-bottom: 2rem;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 500;
         }
         .back-home {
             display: inline-block;
@@ -62,7 +75,10 @@
         <a href="index.html" class="back-home">← 返回首页</a>
         <article>
             <h1>关于此博客</h1>
-            <time class="post-date">2025-09-27</time>
+            <div class="post-meta">
+                <span class="category-badge" style="background-color: #51cf66">随笔</span>
+                <time class="post-date">2025-09-27</time>
+            </div>
             <p>欢迎来到我的博客！这是使用自己搭建的极简静态博客生成器发布的第一篇文章。</p>
 <h2>建站想法</h2>
 <p>创建这个博客是希望做一些属于自己的东西。看过hexo,hugo等框架，想来想去还是希望自定义的程度高一点，以后也能添加一些有趣的功能。我很喜欢一切可以自己修改，自己掌控的感觉，从0到1一点点添加功能，同时保持简洁与优雅，是我理想的博客实现。
